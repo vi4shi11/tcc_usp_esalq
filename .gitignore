@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# NodeJS
+node_modules/
+.DS_Store
+
+# Modelos (muito grandes para GitHub)
+modelo/
+*.safetensors
+*.bin

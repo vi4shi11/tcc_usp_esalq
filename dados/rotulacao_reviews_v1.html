@@ -1,0 +1,1841 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rotulação de Reviews - TCC</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .header .progress {
+            margin-top: 15px;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: white;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .review-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .review-id {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 10px;
+            font-family: monospace;
+        }
+        
+        .review-text {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #212529;
+            margin-bottom: 20px;
+        }
+        
+        .label-section {
+            margin-bottom: 25px;
+        }
+        
+        .label-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .label-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: #667eea;
+            margin-right: 10px;
+            border-radius: 2px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            border: 2px solid #dee2e6;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        
+        .checkbox-item:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .checkbox-item.checked {
+            border-color: #667eea;
+            background: #e7edff;
+        }
+        
+        .checkbox-item label {
+            cursor: pointer;
+            font-size: 15px;
+            color: #495057;
+            margin: 0;
+        }
+        
+        .category-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 2px solid #dee2e6;
+            transition: all 0.2s;
+        }
+        
+        .category-card:hover {
+            border-color: #667eea;
+        }
+        
+        .category-card.active {
+            border-color: #667eea;
+            background: #e7edff;
+        }
+        
+        .category-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 15px;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .radio-item {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 10px 18px;
+            border-radius: 6px;
+            border: 2px solid #dee2e6;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        
+        .radio-item:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .radio-item input[type="radio"] {
+            margin-right: 8px;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        
+        .radio-item.checked {
+            border-color: #667eea;
+            background: #e7edff;
+        }
+        
+        .radio-item.checked.positivo {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+        
+        .radio-item.checked.negativo {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+        
+        .radio-item.checked.neutro {
+            border-color: #6c757d;
+            background: #e2e3e5;
+        }
+        
+        .radio-item label {
+            cursor: pointer;
+            font-size: 14px;
+            color: #495057;
+            margin: 0;
+        }
+        
+        .remove-flag {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .remove-flag.checked {
+            background: #ffeaa7;
+            border-color: #f39c12;
+        }
+        
+        .remove-flag-item {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .remove-flag-item input[type="checkbox"] {
+            margin-right: 12px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .remove-flag-item label {
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #856404;
+            margin: 0;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #dee2e6;
+        }
+        
+        .nav-button {
+            padding: 12px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+        
+        .nav-button.prev {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .nav-button.prev:hover {
+            background: #5a6268;
+        }
+        
+        .nav-button.next {
+            background: #667eea;
+            color: white;
+        }
+        
+        .nav-button.next:hover {
+            background: #5568d3;
+        }
+        
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .review-counter {
+            font-size: 16px;
+            color: #6c757d;
+            font-weight: 500;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .action-button {
+            padding: 10px 20px;
+            font-size: 14px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+        
+        .action-button:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .action-button.export {
+            background: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+        
+        .action-button.export:hover {
+            background: #218838;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            padding: 15px;
+            background: #e7edff;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .stat-item {
+            flex: 1;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 12px;
+        }
+        
+        .stat-value {
+            color: #667eea;
+            font-size: 20px;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 Rotulação de Reviews</h1>
+            <div class="progress">
+                <div>Progresso: <span id="progress-text">0/200</span></div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="review-card">
+                <div class="review-id" id="review-id">ID: -</div>
+                <div class="review-text" id="review-text">Carregando...</div>
+            </div>
+            
+            <div class="label-section">
+                <div class="label-title">Categorias e Sentimentos</div>
+                <p style="color: #6c757d; margin-bottom: 20px; font-size: 14px;">Para cada categoria, selecione o sentimento (Positivo, Negativo ou Neutro). Você pode selecionar múltiplas categorias.</p>
+                
+                <div class="category-card" id="card-logistica">
+                    <div class="category-name">📦 Logística</div>
+                    <div class="radio-group">
+                        <div class="radio-item" id="radio-logistica-positivo">
+                            <input type="radio" name="sentiment-logistica" id="logistica-positivo" value="Positivo">
+                            <label for="logistica-positivo">✅ Positivo</label>
+                        </div>
+                        <div class="radio-item" id="radio-logistica-negativo">
+                            <input type="radio" name="sentiment-logistica" id="logistica-negativo" value="Negativo">
+                            <label for="logistica-negativo">❌ Negativo</label>
+                        </div>
+                        <div class="radio-item" id="radio-logistica-neutro">
+                            <input type="radio" name="sentiment-logistica" id="logistica-neutro" value="Neutro">
+                            <label for="logistica-neutro">➖ Neutro</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="category-card" id="card-produto">
+                    <div class="category-name">🛍️ Produto</div>
+                    <div class="radio-group">
+                        <div class="radio-item" id="radio-produto-positivo">
+                            <input type="radio" name="sentiment-produto" id="produto-positivo" value="Positivo">
+                            <label for="produto-positivo">✅ Positivo</label>
+                        </div>
+                        <div class="radio-item" id="radio-produto-negativo">
+                            <input type="radio" name="sentiment-produto" id="produto-negativo" value="Negativo">
+                            <label for="produto-negativo">❌ Negativo</label>
+                        </div>
+                        <div class="radio-item" id="radio-produto-neutro">
+                            <input type="radio" name="sentiment-produto" id="produto-neutro" value="Neutro">
+                            <label for="produto-neutro">➖ Neutro</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="category-card" id="card-atendimento">
+                    <div class="category-name">👥 Atendimento</div>
+                    <div class="radio-group">
+                        <div class="radio-item" id="radio-atendimento-positivo">
+                            <input type="radio" name="sentiment-atendimento" id="atendimento-positivo" value="Positivo">
+                            <label for="atendimento-positivo">✅ Positivo</label>
+                        </div>
+                        <div class="radio-item" id="radio-atendimento-negativo">
+                            <input type="radio" name="sentiment-atendimento" id="atendimento-negativo" value="Negativo">
+                            <label for="atendimento-negativo">❌ Negativo</label>
+                        </div>
+                        <div class="radio-item" id="radio-atendimento-neutro">
+                            <input type="radio" name="sentiment-atendimento" id="atendimento-neutro" value="Neutro">
+                            <label for="atendimento-neutro">➖ Neutro</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="category-card" id="card-preco">
+                    <div class="category-name">💰 Preço</div>
+                    <div class="radio-group">
+                        <div class="radio-item" id="radio-preco-positivo">
+                            <input type="radio" name="sentiment-preco" id="preco-positivo" value="Positivo">
+                            <label for="preco-positivo">✅ Positivo</label>
+                        </div>
+                        <div class="radio-item" id="radio-preco-negativo">
+                            <input type="radio" name="sentiment-preco" id="preco-negativo" value="Negativo">
+                            <label for="preco-negativo">❌ Negativo</label>
+                        </div>
+                        <div class="radio-item" id="radio-preco-neutro">
+                            <input type="radio" name="sentiment-preco" id="preco-neutro" value="Neutro">
+                            <label for="preco-neutro">➖ Neutro</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="remove-flag" id="remove-flag-container">
+                <div class="remove-flag-item">
+                    <input type="checkbox" id="to-remove" value="true">
+                    <label for="to-remove">🗑️ Marcar para remover</label>
+                </div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-label">Categorias rotuladas</div>
+                    <div class="stat-value" id="cat-count">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Marcado para remover</div>
+                    <div class="stat-value" id="remove-flag-status">Não</div>
+                </div>
+            </div>
+            
+            <div class="navigation">
+                <button class="nav-button prev" id="prev-btn" onclick="previousReview()">← Anterior</button>
+                <div class="review-counter">
+                    Review <span id="current-index">1</span> de <span id="total-reviews">200</span>
+                </div>
+                <button class="nav-button next" id="next-btn" onclick="nextReview()">Próximo →</button>
+            </div>
+            
+            <div class="actions">
+                <button class="action-button" onclick="saveProgress()">💾 Salvar Progresso</button>
+                <button class="action-button export" onclick="exportData()">📥 Exportar Dados</button>
+                <button class="action-button" onclick="loadProgress()">🔄 Carregar Progresso</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Data from Excel
+        const reviews = [
+        {
+                "id": "d3c62500417e7eeab7c6ac2151b67357",
+                "text": "Um produto como uma carteira somente poderia ser avaliado depois de algum tempo de uso, No entanto, o produto é bem acabado e de couro conforme o especificado pela empresa.",
+                "index": 0
+        },
+        {
+                "id": "0f952ad4dfb88a77f12211a4038c70dd",
+                "text": "Entrega no prazo , bom produto .",
+                "index": 1
+        },
+        {
+                "id": "067b7c9c760d8bda7a2c38fb1f3fdf6e",
+                "text": "entrega rápida",
+                "index": 2
+        },
+        {
+                "id": "62f78be17aa2ef7db33e5781e00e7dc8",
+                "text": "Chegou no prazo e atendeu as minhas espectativas",
+                "index": 3
+        },
+        {
+                "id": "9fcdf7983153b632cdbab78bf7d7f83a",
+                "text": "Logística ótima entregue antes do prazo previsto, estou satisfeito. ",
+                "index": 4
+        },
+        {
+                "id": "a2e0d982abe0a650156ec056ca4d1b85",
+                "text": "Entrega no prazo combinado , chegou certinho recomendo esse loja ",
+                "index": 5
+        },
+        {
+                "id": "74ef1abcf8bfb7ca756b7cd788ee366b",
+                "text": "Vocês me enviaram faltando 3 cortinas. E agora?",
+                "index": 6
+        },
+        {
+                "id": "1faf54dfeb5d82e5218a8ca9433e90b8",
+                "text": "A encomenda demorou muito a chegar mas chegou em perfeito estado.",
+                "index": 7
+        },
+        {
+                "id": "2070cfae604cb0be67d5967716a68107",
+                "text": "produto dentro do esperado sem defeitos",
+                "index": 8
+        },
+        {
+                "id": "5bb1b76de6b52930ca68babe90a89935",
+                "text": "Chegou no prazo !",
+                "index": 9
+        },
+        {
+                "id": "bbda12c71aab2a0fc4abd9552708b896",
+                "text": "S",
+                "index": 10
+        },
+        {
+                "id": "3fca95425de85f09a53a4ddf53382986",
+                "text": "Produto ótimo, a entrega deixou a desejar",
+                "index": 11
+        },
+        {
+                "id": "9258b018cff95838336b62b1d0557b70",
+                "text": "Ainda não recebi meu produto não dá pra avaliar",
+                "index": 12
+        },
+        {
+                "id": "55bb8e267a4a3de93b0392fd9c0b7423",
+                "text": "Top",
+                "index": 13
+        },
+        {
+                "id": "05a8043ba7365e650700ee4d1c81cfba",
+                "text": "Gostaria que as entregas fossem mais rápidas.",
+                "index": 14
+        },
+        {
+                "id": "9fa512c5a402254eb83131b1ec913472",
+                "text": "Quero estorno do meu dinheiro o mais rápido possível ou ainda aceito a entrega do meu produto",
+                "index": 15
+        },
+        {
+                "id": "3e2077f5e653f7feb84021b9aeae83a7",
+                "text": "Produto muito bom mais o prazo nao.foi cumprido ",
+                "index": 16
+        },
+        {
+                "id": "7e5cc504d8982e90475a983f91fd77e4",
+                "text": "Olá, o produto veio com o conctor faltando. Por favor, podem me enviar? \n\nAguardo. ",
+                "index": 17
+        },
+        {
+                "id": "1ffb32409730d69bbb5e43854e520701",
+                "text": "Não é um produto que chega e é passível de instalação. Sem manual, é necessário entrar em contato com a empreaa fabricante. Um produto caro que exige plataforma Windows para instalação e configuração.",
+                "index": 18
+        },
+        {
+                "id": "788bbd45387e5796158ee6946bb4fc37",
+                "text": "Ok",
+                "index": 19
+        },
+        {
+                "id": "8a8685c5c82139492c1c2ffc9c34b784",
+                "text": "Quero trocar o produto. Tecido da cortina mega fino",
+                "index": 20
+        },
+        {
+                "id": "82e4a744dd74699abef5974e2e6aabc0",
+                "text": "Recebi o produto antes da data estipulada porem as tampas vieram quebradas como se não suportasse o produto dentro da embalagem (embalagem pequena).",
+                "index": 21
+        },
+        {
+                "id": "25b5083f478c1c2c328861ed577331ca",
+                "text": "Meu filho amou a mochila... Perfeita..e melhor ainda chegou justo no aniversário dele.",
+                "index": 22
+        },
+        {
+                "id": "d2e20804862d37a172387b3b7df223e9",
+                "text": "desde pedido não vieram as almofadas ainda",
+                "index": 23
+        },
+        {
+                "id": "fa17f23f65598c9ca0caab952a71651e",
+                "text": "Boa!",
+                "index": 24
+        },
+        {
+                "id": "e10c873dd7f4b4878f3ea35a6589be9d",
+                "text": "Td certo com a entrega",
+                "index": 25
+        },
+        {
+                "id": "47a1ec3b36740c923bfa0dead6ff1517",
+                "text": "Produtos com qualidade, entregues antes do prazo.",
+                "index": 26
+        },
+        {
+                "id": "e60413edda83aa70de7f04e231148717",
+                "text": "Muito bom",
+                "index": 27
+        },
+        {
+                "id": "fd785bd6eaac4a6cc3015cb72b59243f",
+                "text": "Recebi o produto antes do prazo estimado. O produto esta em teste. Vamos avaliar se corresponde ao que esperamos. Por enquanto vou avaliar com 03 estrelas.",
+                "index": 28
+        },
+        {
+                "id": "f3535f3b306d9faf3028163034e5c54f",
+                "text": "Gostei da compra produto de qualidade..chegou antes do ora só previsto..",
+                "index": 29
+        },
+        {
+                "id": "37781f13bba845e460bc4a91dcbe9d59",
+                "text": "Comprei de 240 tabletes e veio 120 entrei com pedido de troca estou aguardando resposta.Dependendo de como a loja parceira resolverá meu problema direi se indico ou ñ.",
+                "index": 30
+        },
+        {
+                "id": "794c6d23c17eed8cec6120ff529bc2ef",
+                "text": "Entrega muito rápida",
+                "index": 31
+        },
+        {
+                "id": "70f04f61aafcb6a5e2d616f3a85a9836",
+                "text": "Comprei 3 garrafas de vinho veio so duas e agora reclamar como se assinei ",
+                "index": 32
+        },
+        {
+                "id": "87e2bf1ae884f895e4a9ac2a1c8537f0",
+                "text": "Prezados,\nO produto estragou na hora de conectar com o aparelho de 110 volts na rede de 220.\nComo faço para voces enviarem outro?",
+                "index": 33
+        },
+        {
+                "id": "f1960cf21cfb437375c637358f4ffd62",
+                "text": "O carregador anunciado não confere com o entregue, na caixa do produto vem até escrito a amperagem qual eu necessitava ,porém no carregador consta metade da amperagem oferecida pelo vendedor ",
+                "index": 34
+        },
+        {
+                "id": "d2d81a1f09971197b320a11e4d91c165",
+                "text": "São duas peças e eu só recebi uma",
+                "index": 35
+        },
+        {
+                "id": "808a3c0213477660e0a6e83f485ed40c",
+                "text": "o produto ainda não instalei mas a entrega foi super rápido",
+                "index": 36
+        },
+        {
+                "id": "3352077e013ce9ee9b68fad14c9539c5",
+                "text": "Só problema é que não avisa que é preciso ter um cartucho ",
+                "index": 37
+        },
+        {
+                "id": "042a30f647f0f86b24bf62b4b101e206",
+                "text": "otimo produto chegou em boas condições ",
+                "index": 38
+        },
+        {
+                "id": "b90768f63e8c48af647b8c5966b0989d",
+                "text": "Além do produto ser bom, a entrega foi super rápida.\nEsse eu indico.",
+                "index": 39
+        },
+        {
+                "id": "fbf34e98200bee0d92a8625d07dc6f8c",
+                "text": "Ótima compra para quem tem pouco espaço pra secar roupas.",
+                "index": 40
+        },
+        {
+                "id": "0084ee902f9a4e006a281b644b78cf29",
+                "text": "Ate agora comprei o transformador de voltagem 9000 btu nao recebi liguei pra americana a atendente me falou q ia liga pra transportadora e mr retorno em dois dias ja se passaram o prazo .",
+                "index": 41
+        },
+        {
+                "id": "7ec9f5da80457bd8981e0638573a49fe",
+                "text": "FOI CANCELADO. COMO FAÇO PARA FAZER OUTRO PEDIDO CO O VALOR PAGO ?",
+                "index": 42
+        },
+        {
+                "id": "94a12a7754efde5a546b168174e603e8",
+                "text": "A empresa targaryen deixou a desejar com o envio do produto na cor errada.",
+                "index": 43
+        },
+        {
+                "id": "df095c5e7b50dc8b22ea9a786fc3dfcf",
+                "text": "Muito bom!",
+                "index": 44
+        },
+        {
+                "id": "e9c908429373d001404bebddd26496cd",
+                "text": "achei que demoro mais que os outros pedidos...",
+                "index": 45
+        },
+        {
+                "id": "dae5174116d950a23616a58119738eb8",
+                "text": "O produto custou R$34 com frete, mas não é bom. É bem ralinho parece água. ",
+                "index": 46
+        },
+        {
+                "id": "41b71ce4b8849a56b4d51b9c87c19711",
+                "text": "Produto excelente. Facil uso. Recomendo.",
+                "index": 47
+        },
+        {
+                "id": "ef9ef383ff6625e8e118db388ad3420d",
+                "text": "No site o produto parece ter melhor qualidade de material e acabamento.",
+                "index": 48
+        },
+        {
+                "id": "9c3aea89b871e265d8520ff4be5500d6",
+                "text": "Excelente produto. Bom para qq fotógrafo.",
+                "index": 49
+        },
+        {
+                "id": "6113a384f3cd7b85d430c5bbd22e52fe",
+                "text": "Não gostei pois me mandaram um produto perto e vencer o prazo de validade. Recedi o produto de 1kg no final do mês de abril com a validade para vencer agora no mês de julho .Gostaria de efetuar troca.",
+                "index": 50
+        },
+        {
+                "id": "df0d9c1964975f1a9e514e22ec8be080",
+                "text": "Boa tarde,\nGostei muito do serviço e espero ser atendida bem assim na próxima compra!",
+                "index": 51
+        },
+        {
+                "id": "900d4ea6628849cf950be739b6b0f4f7",
+                "text": "só acho que o frete é muito caro, eu evitaria comprar novamente",
+                "index": 52
+        },
+        {
+                "id": "3a3fc2126f13eff43879b7dce2ee7c7e",
+                "text": "O produto chegou certinho, antes do prazo, bem embalado e sem avarias.",
+                "index": 53
+        },
+        {
+                "id": "6017f669ef85873b7a8d5fd6bde64ffb",
+                "text": "O produto é realmente de boa qualidade e confere com o desenho publicado.",
+                "index": 54
+        },
+        {
+                "id": "0285ed9052a73d01dc6411c082d7b275",
+                "text": "Excelencia. Sempre compro aqui ",
+                "index": 55
+        },
+        {
+                "id": "28d95f0a0da70e316e7eb71fee54220b",
+                "text": "Confiável, rápido e com Bom Preço.",
+                "index": 56
+        },
+        {
+                "id": "40f3f2804ac4d58fb4c0e5f4138038ae",
+                "text": "O relógio não era original e a foto do anuncio não batia com o qual recebi. Produto de pessima qualidade. ",
+                "index": 57
+        },
+        {
+                "id": "66e993fb29cd3cd3914a7a2b9c366731",
+                "text": "Chegou bem antes do prazo, é o produto é de excelente qualidade! ",
+                "index": 58
+        },
+        {
+                "id": "ffbdbca364b05f38fd4b457358f845ff",
+                "text": "O produto ainda ano foi entregue.",
+                "index": 59
+        },
+        {
+                "id": "3bca8d9922bed47eb96f23d121945290",
+                "text": "Cumpriu o acordado!",
+                "index": 60
+        },
+        {
+                "id": "cac32b3fc26f657524fe812fc4ede941",
+                "text": "Recebi a película e ela veio toda lacrada, porém no momento de colocá-la estava com problemas, riscos na tela e falta de cola em torno, ou seja, produto de má qualidade. ",
+                "index": 61
+        },
+        {
+                "id": "edcf4c003ecabe5eb9f718d804666b66",
+                "text": "O kit de cloreto de magnésio vale mais a pena do que comprar individualmente nas farmácias e drogarias.",
+                "index": 62
+        },
+        {
+                "id": "44b1f6b9b60aef33730c43641d85e818",
+                "text": "A entrega foi rápida, o produto superou as minhas expectativas, pena que o recarregador de baterias veio com um pequeno defeito de fabricacao, ma nada que comprometa a lanterna.",
+                "index": 63
+        },
+        {
+                "id": "dcd8a39e8e7a91c655c19cbb43247ce5",
+                "text": "Produto bem embalado. Entrega demorou mais que as concorrentes, porém foi 2 dias antes de vencer o prazo.",
+                "index": 64
+        },
+        {
+                "id": "88f1e6485cf67624d3d5937b872cac5d",
+                "text": "Muito bom",
+                "index": 65
+        },
+        {
+                "id": "051eb83a8b50dd9269ba52a151f5fbff",
+                "text": "Recomendo esta loja pela qualidade, preço e rapidez na entrega.",
+                "index": 66
+        },
+        {
+                "id": "227ca9a17dbaba56072566fe1968cfc9",
+                "text": "sempre compro com voces,porem dessa vez o produto que comprei deu problema no prazo de entrega",
+                "index": 67
+        },
+        {
+                "id": "dbb192dd0836c49932efe8b7018c93fe",
+                "text": "Ótimo produto.",
+                "index": 68
+        },
+        {
+                "id": "8eb0191bb96bb6a5295d1040f704435f",
+                "text": "Dedoches são muito lindos! Meu filho amou! Foi entregue dentro do prazo e intacto. Super recomendo!",
+                "index": 69
+        },
+        {
+                "id": "bdfe08cb16560ac0e5f7855583e714d2",
+                "text": "Serei cliente c frequência..\n",
+                "index": 70
+        },
+        {
+                "id": "118cea1913e2f9d91f24066bf570fe20",
+                "text": "péssima embalagem , tive que colar ele todo, fique com preguiça pelo preço de mandar de volta, mas não indico pra ninguém a loja...",
+                "index": 71
+        },
+        {
+                "id": "d435bf750cdbb1376bcd4141e1737694",
+                "text": "otimo atendimento",
+                "index": 72
+        },
+        {
+                "id": "3342e6b3b65eee0530f5cc17a8b5e7a4",
+                "text": "Tudo certo na entrega é produto muito bom recomendo",
+                "index": 73
+        },
+        {
+                "id": "98ed21dd16a95e08241c4bca56bcb9ad",
+                "text": "a caixa estava meia aberta e a data de garantia que não sei se é a validade está muito proxima 06/2018\n",
+                "index": 74
+        },
+        {
+                "id": "26ccedab64af303bfa98ffe1765572e0",
+                "text": "Tudo certo!",
+                "index": 75
+        },
+        {
+                "id": "ad7f00d2a8964a29500ee5122b2b6b7e",
+                "text": "Mercadoria perfeita recomendo a todos parabéns pelo trabalho de vcs",
+                "index": 76
+        },
+        {
+                "id": "918bd7e04b6ecd598d5fd14942fad51a",
+                "text": "gostei ",
+                "index": 77
+        },
+        {
+                "id": "5193a01c7a8f65e318891228e8967c49",
+                "text": "Eu comprei nas lannister, por se tratar de uma loja de confiança, porém ao chegar o produto descobri que o que foi vendido pela marca Targus, era na verdade um produto falsificado, não confio mais",
+                "index": 78
+        },
+        {
+                "id": "95565652d4dddb31ca69e9ea04297b3e",
+                "text": "nao recebido",
+                "index": 79
+        },
+        {
+                "id": "19d0e4c99907407763b8ffc084e7a63b",
+                "text": "Atendeu minhas expectativas,chegou antes do prazo,tecido lindo e de boa qualidade.Amei.",
+                "index": 80
+        },
+        {
+                "id": "e18f63b8f429f2e923faeddfe034a972",
+                "text": "Comprei o produto para honda biz. No entanto na embalagem havia escrito e marcado para handa broz. ",
+                "index": 81
+        },
+        {
+                "id": "c848b17cf82a66ee3a23661a94ad6852",
+                "text": "Recebi no prazo e já apliquei. Ficou muito bom e de fácil aplicação, mesmo pra mim que não tenho muita habilidade pra isso. Agora é só esperar para ver a durabilidade. ",
+                "index": 82
+        },
+        {
+                "id": "a960a525fe1f8bc382be6ae86e2c286e",
+                "text": "Aí, adorei, chegou bem antes do prazo, e a armação é lindaaaaa, do jeitinho que eu queria ",
+                "index": 83
+        },
+        {
+                "id": "303d1805e472717da19793051a53ed91",
+                "text": "Eu não recebi os dois produtos falta \nKit tapetes para cozinha 3 peças pintado à mão - Cru\n1 unidade - R$ 35,00 cada\n\n",
+                "index": 84
+        },
+        {
+                "id": "61444af46eba67a5d657ea209e893476",
+                "text": "Ótimo ",
+                "index": 85
+        },
+        {
+                "id": "c141e288b3722caeb717911e52fee32f",
+                "text": "Produto original, bom preço e entrega rápida!!!",
+                "index": 86
+        },
+        {
+                "id": "f51a5d398f2374cb21257cc26a2ee01a",
+                "text": "Eu não tenho notícias do pedido anos do se e o correio da minha cidade",
+                "index": 87
+        },
+        {
+                "id": "6d9e026755d4aec54a2334e9b6d35b08",
+                "text": "Ainda não recebi o cinto.",
+                "index": 88
+        },
+        {
+                "id": "a3ee01e5ed1c50bee12b1b82b79b31bf",
+                "text": "Recebi o produto corretamente conforme compra .",
+                "index": 89
+        },
+        {
+                "id": "5414ccae46e737879d3abffb7f7b6d55",
+                "text": "excelente produto, entrega super agil",
+                "index": 90
+        },
+        {
+                "id": "b13013b811c2325934e8e049683bdcf2",
+                "text": "Paguei mais caro e esperei mais tempo pra receber escovas Dourada e Branca...\n\nNo fim das contas recebi 2 escovas ROSA.",
+                "index": 91
+        },
+        {
+                "id": "7db2631738c433cc51917db13aa2e747",
+                "text": "Comprei uma capinha transparente e veio uma marmotenta colorida... ridículo..",
+                "index": 92
+        },
+        {
+                "id": "b8ae58d8aaf02bf99499884c0fe19ac2",
+                "text": "Bom dia , eu só queria entender , o por quê vocês colocam quê não será entregue em minha residência,quê será entregue ná agência dos Correios mais próxima,sendo-quê,o frete foi incluso na compra? ",
+                "index": 93
+        },
+        {
+                "id": "48563905d91e9530817215a9a4432741",
+                "text": "Ótimo produto!",
+                "index": 94
+        },
+        {
+                "id": "3dca11df77acc554aa2f0f98292bbe43",
+                "text": "O produto entregue não foi o produto comprado por mim, o pedido foi feito para o Aspirador De Pó Ph Rapid 1000N 127V e foi entregue ASP PO RAPID TURBO PAS02 127V, Desejo devolução do valor pago e reti",
+                "index": 95
+        },
+        {
+                "id": "7fd6b41ff07c831d31a7fea0e0d66b56",
+                "text": "Excelente!",
+                "index": 96
+        },
+        {
+                "id": "bac39a30c27fd42d267953f5d9ce4948",
+                "text": "Excelente. Entrega dentro do prazo. Produto muito bem embalado.",
+                "index": 97
+        },
+        {
+                "id": "97bcebfc73a72905795476815cb5a2aa",
+                "text": "Relógio ótimo, como na descrição",
+                "index": 98
+        },
+        {
+                "id": "ce81418965d87fc6ff5c82c6e5141a88",
+                "text": "Muito bom. Adorei.",
+                "index": 99
+        },
+        {
+                "id": "2144c89d3f5223859489cd2f6248d3ec",
+                "text": "E uma ótima plataforma de compra",
+                "index": 100
+        },
+        {
+                "id": "97c727290349aa034bb61f586175ba82",
+                "text": "otima entrega",
+                "index": 101
+        },
+        {
+                "id": "2998c7c8581528db19796a0f9124660d",
+                "text": "O produto, é exatamente como esperava.perfeito.",
+                "index": 102
+        },
+        {
+                "id": "9194bbd14273ecb710f5adb46d1d3c8a",
+                "text": "foi muito bom comprar com vcs obrigada!!!",
+                "index": 103
+        },
+        {
+                "id": "f3ec48a00e5a8823b6cc48625c03cf1d",
+                "text": "Produto não foi entregue e já entrei em contato com a lannister que ainda neo deu retorno ",
+                "index": 104
+        },
+        {
+                "id": "464879fa9b78bd5d9b81327d63a3fe75",
+                "text": "produto chegou antes do prazo, cuidadosamente bem embalado, lindo pendente! recomendo.",
+                "index": 105
+        },
+        {
+                "id": "ada5d7122f322dab29d830ab83792a18",
+                "text": "otimo produto",
+                "index": 106
+        },
+        {
+                "id": "a74e625163df3bb5cfaa3f24bb9a0e4d",
+                "text": "Tive que ir no correio buscar a mercadoria, além de ter pago o frete para receber em minha residência.",
+                "index": 107
+        },
+        {
+                "id": "02a8d9699a0dc9a726a7c530c70c839e",
+                "text": "Produto excelente e de ótima qualidade. Adorei.",
+                "index": 108
+        },
+        {
+                "id": "bb26ba159af4f8531be0a14c34f866cf",
+                "text": "Bom",
+                "index": 109
+        },
+        {
+                "id": "198a7281626e17dc97195e5c9a8b16c7",
+                "text": "Chegou antes da data prevista, me deixou muito contente! Produto de ótima qualidade!",
+                "index": 110
+        },
+        {
+                "id": "780bd255c95af7fae2a95a8a1e652ba0",
+                "text": "O produto é um plástico Duro, vamos ver se suporta o aquecimento da lâmpada.",
+                "index": 111
+        },
+        {
+                "id": "4c48489c297d6f0474d2c3a21be63e37",
+                "text": "fui bem atendido, mas o valor cobrado foi divergente do valor apresentado no site(desconto de 5% pela forma de pagamento). mas tudo ja foi resolvido.",
+                "index": 112
+        },
+        {
+                "id": "1060d56dcc60ee8aac9cc1e5880c2bf2",
+                "text": "produto de má qualidade",
+                "index": 113
+        },
+        {
+                "id": "e5d2692fe45a9bf8ceacc0c3b9944528",
+                "text": "A demora pra entrega é maior que de outros produtos e isso é desanimador",
+                "index": 114
+        },
+        {
+                "id": "7177b743bc34ca680795500cf1db91f3",
+                "text": "Ótimo produto, entrega rápida, minha esposa esta extremamente satisfeita, me dei bem !!",
+                "index": 115
+        },
+        {
+                "id": "8eb5000a7d3b91685e234b5d15dedda0",
+                "text": "Produto de qualidade conforme anunciado, entrega antes do combinado.",
+                "index": 116
+        },
+        {
+                "id": "3322460564fc8f370b077b7e49d733ad",
+                "text": "Veio super rapido excelente",
+                "index": 117
+        },
+        {
+                "id": "348bb52140cb8ab0a2ff4df1e38595b3",
+                "text": "Ja enviei varios emails reclamando sobre a entrega do produto e n me respondem",
+                "index": 118
+        },
+        {
+                "id": "c587962d35352f4a20751a29ac397f71",
+                "text": "Achei apenas que o acabamento da peça podia ser melhor.",
+                "index": 119
+        },
+        {
+                "id": "0316cf6a2c01c9705a37241a8d08dda8",
+                "text": "Supero minhas expectativas. Muito bom o produto.",
+                "index": 120
+        },
+        {
+                "id": "5270574b820e27ed76cdb13a6dfc4391",
+                "text": "Paguei pelo Kit completo:shampoo,condicionador e ativador de cachos e recebi apenas o ativador de cachos,isso tá errado\n",
+                "index": 121
+        },
+        {
+                "id": "a370bd7d6b7092478bbc56f6315a1ebb",
+                "text": "O produto chegou antes do previsto veio certinho conforme o descrito no site e veio bem embalado.",
+                "index": 122
+        },
+        {
+                "id": "e412e969e503c869d5e3c7952001afbf",
+                "text": "recomendo! tudo como esperado e dentro do prazo!",
+                "index": 123
+        },
+        {
+                "id": "ffdbb78f8ccb68da33e0d08769cc370b",
+                "text": "Muito boa loja",
+                "index": 124
+        },
+        {
+                "id": "fea46f78ce903a1cf5891e89b5b395f4",
+                "text": "Muito rápida a entrega!!!",
+                "index": 125
+        },
+        {
+                "id": "c1b4a0188f42cb250bf5549c9501eb20",
+                "text": "não veio o produto que eu comprei.",
+                "index": 126
+        },
+        {
+                "id": "684697287fec3e4dc2e8704348b9a1a8",
+                "text": "Tudo certinho",
+                "index": 127
+        },
+        {
+                "id": "3a3d4189aef2a6dcdeb7bd75e654aed2",
+                "text": "faltou as duas peças do aparelho massageador",
+                "index": 128
+        },
+        {
+                "id": "b2428491ebf0bc8b83e689d544e62061",
+                "text": "sim\n",
+                "index": 129
+        },
+        {
+                "id": "cb1167d0d72ad282833cc85c0fe178f1",
+                "text": "Melhor preço e entrega super rápida, sou fregues a muito tempo, loja totalmente confiável...",
+                "index": 130
+        },
+        {
+                "id": "a5107a5c2ec9c677641b907526da3eab",
+                "text": "Produto veio certinho e no prazo!!",
+                "index": 131
+        },
+        {
+                "id": "75cfce1f99f55b05db43069c25752652",
+                "text": "Seria uma sugestão, as imagens não são parecidas com o produto original, se possivel tirar fotos do produto de uma forma que a visualização seja mais clara.\nPois o produto que comprei achei diferente",
+                "index": 132
+        },
+        {
+                "id": "72906dc18cd7aaed26be40c859613c65",
+                "text": "Comprei duas válvulas solenóides iguais. Paguei o mesmo produto com quantidade 2 (dois). As válvulas são iguais, mas as roscas são diferentes. Uma é BSP, com passo igual a NPT, a outra tem passo maio",
+                "index": 133
+        },
+        {
+                "id": "fba10cb26df7b1292e3efe486b6d0907",
+                "text": "O produto solicitado foi entregue com algum atraso mas em perfeito estado,Muito Obrigado.",
+                "index": 134
+        },
+        {
+                "id": "24fca39028bd6bbbcf4c0d9929b75f30",
+                "text": "embora tenha comprado o produto durante a Black Friday para presentear uma criança da família, o presente não chegou a tempo do Natal. Fui obrigada a comprar às pressas um presente substituto",
+                "index": 135
+        },
+        {
+                "id": "7bbed20edbdbef40df091446cfd51c7f",
+                "text": "Produto muito bom, confortável, ",
+                "index": 136
+        },
+        {
+                "id": "1a9542d9ce3b1d9771070bce3dd22716",
+                "text": "Entrega super rápida, Amei o produto, com certeza indico",
+                "index": 137
+        },
+        {
+                "id": "e42ac8f45d762b38ef38bd7d6b14ab78",
+                "text": "Muito bom,",
+                "index": 138
+        },
+        {
+                "id": "36db24f20b7b8cd08d81fc8dd5ec4261",
+                "text": "Produto recebido.dentro do prazo, características conforme anunciado.",
+                "index": 139
+        },
+        {
+                "id": "3a3d8d6610098a1c0b86c26e5f1bf070",
+                "text": "O relógio tem uma boa qualidade. ",
+                "index": 140
+        },
+        {
+                "id": "0cd404ed19c3e0abf2cefb264815f722",
+                "text": "Muito satisfeita, produto chegou antes do prazo em perfeita condições , parabéns nota 10",
+                "index": 141
+        },
+        {
+                "id": "5c99f6ff0f883ea3b283853720266109",
+                "text": "Produto chegou antes do prazo",
+                "index": 142
+        },
+        {
+                "id": "47f3bcca5a32c2daf41c85c8075bed22",
+                "text": "Entregou o produto de forma correta e antes do prazo, muito eficiente. ",
+                "index": 143
+        },
+        {
+                "id": "57f42ef76cd67dc7575082f526a92ab4",
+                "text": "até o momento não recebi meu produto",
+                "index": 144
+        },
+        {
+                "id": "c1873036f315d44a81e20a98b6d8b8cf",
+                "text": "Além do prazo de entrega ser super demorado, agora não consigo contacta-los pra saber o que está acontecendo e quando ou se vão entregar.",
+                "index": 145
+        },
+        {
+                "id": "52f0e4be30fdb216f94ceec0d5747060",
+                "text": "Comprei e não levei, comprei em novembro com promessa de receber o produto em 12 dias, ja se passaram mais de 30 dias... e o pior \nSEM NENHUM CONTATO, sem nenhuma informação. detalhe 2 parcelas pagas",
+                "index": 146
+        },
+        {
+                "id": "308efe0684448009c6ae0ce748abe2a4",
+                "text": "e uma loja muito boa \n",
+                "index": 147
+        },
+        {
+                "id": "9c62b409410992f057c1e573ecc6eb6a",
+                "text": "Infelizmente o produto não possui boa qualidade e fica permanentemente com a luz ligada, tendo alto consumo de energia (pilhas)",
+                "index": 148
+        },
+        {
+                "id": "1eb629865d32d54bbb43d0ac17134d9d",
+                "text": "òtimo serviço",
+                "index": 149
+        },
+        {
+                "id": "4d1fde04ecdd948298f2df8943ffda7d",
+                "text": "Chegou antes do prazo",
+                "index": 150
+        },
+        {
+                "id": "109c0901968d5a76adab68a2c324d4d7",
+                "text": "Os produtos chegaram direitinho e antes do prazo!!! Excelente!!",
+                "index": 151
+        },
+        {
+                "id": "4ef59f6c9b99e98d366046bec3b5184f",
+                "text": "Muito bom",
+                "index": 152
+        },
+        {
+                "id": "fdbf078ebb277a5eea895f65dc962da1",
+                "text": "O produto chegou rápido e em perfeito estado.\n",
+                "index": 153
+        },
+        {
+                "id": "6ad4fec6fc0f7a5cd309fbe144ae9a1e",
+                "text": "Chegou antes do prazo , super recomendo ",
+                "index": 154
+        },
+        {
+                "id": "7edc6bcc5bdefed730bf78ceb845a1e4",
+                "text": "Boa empresa entregou antes doi prazo. Produto em perfeito estado.",
+                "index": 155
+        },
+        {
+                "id": "ba7cc43d97c5e6153f353d76537a07e5",
+                "text": "produto lindo, qualidade e preço excelentes.\nEntrega antes do prazo previsto.",
+                "index": 156
+        },
+        {
+                "id": "d6199315f37472452b88f95a8f827fe3",
+                "text": "entregaram no prazo e produto correto",
+                "index": 157
+        },
+        {
+                "id": "d783b9df1cbb8273c3fd93dabebc7028",
+                "text": "Produto diferente do que foi anunciado.",
+                "index": 158
+        },
+        {
+                "id": "59952f8a0a2635a24a0042312fa6118e",
+                "text": "Chegou muito rápido.",
+                "index": 159
+        },
+        {
+                "id": "82dbb86cd473f9145976711279d2ad95",
+                "text": "Super enrolado.. transporte desatualizado, e fora do prazo. Mais de 30 dias esperando .",
+                "index": 160
+        },
+        {
+                "id": "f6192f54ccb20122c5346279d6c2b534",
+                "text": "Produto bom, forte e bom acabamento",
+                "index": 161
+        },
+        {
+                "id": "f0926a194cb1020a9db03dcea2965449",
+                "text": "Produto foi entregue muito antes do prazo determinado.",
+                "index": 162
+        },
+        {
+                "id": "e362b005b08fd777cb2e29d8be450cce",
+                "text": "Voltaria a comprar",
+                "index": 163
+        },
+        {
+                "id": "08e0b7588f3a3594735949d6528783f4",
+                "text": "O PRODUTO O QUAL CHEGOU EM MINHA RESIDENCIA , ERA SIM O PRODUTO O QUAL EU HAVIA FEITO O PEDIDO, POREM O PRODUTO NAO ESTAVA NOS PADROES O QUAL DEVERIA SE ENCONTRAR , FOI UMA FALTA TOTAL DE RESPEITO .",
+                "index": 164
+        },
+        {
+                "id": "bb1f7bf4013b353edba78486f176143c",
+                "text": "Só não coerente o valor do frete.",
+                "index": 165
+        },
+        {
+                "id": "d208fca6db164f5c4bc3b98a7386409a",
+                "text": "Eu recomendo a empresa",
+                "index": 166
+        },
+        {
+                "id": "455e010660a079e65832f49e54084798",
+                "text": "Muito bom essa loja !!\nParabéns!",
+                "index": 167
+        },
+        {
+                "id": "3932906047a7d32bef9f69b580752a3d",
+                "text": "Mesmo com a paralisação o produto chegou antes do previsto. E vieram sem nenhum problema",
+                "index": 168
+        },
+        {
+                "id": "0d429a74885e1504eb865c9ff1d7458d",
+                "text": "amei o produto ja estou usando",
+                "index": 169
+        },
+        {
+                "id": "97db5b4bc2a05d43231355b3e18a20fa",
+                "text": "eu amei meu pedicuro mais gostaria de saber a respeito da nota da garantia estendida ",
+                "index": 170
+        },
+        {
+                "id": "014295912d0bb13c6cbb868e17746d1e",
+                "text": "Produto com etiqueta de autenticidade.",
+                "index": 171
+        },
+        {
+                "id": "e0a0c38a410b88ca67a4007d30bd495d",
+                "text": "Tudo certo com a garantia estendida, também.",
+                "index": 172
+        },
+        {
+                "id": "499b0820814f9e7d1f7f50eb4d4bacfd",
+                "text": "chegou antes do prazo",
+                "index": 173
+        },
+        {
+                "id": "a8fadf675415935a325cafd820a4c58c",
+                "text": "O jogo de panelas e lindo e muito bom. So uma das frigideiras que soltou uns pontinhos de tinta. Mas o resto perfeito",
+                "index": 174
+        },
+        {
+                "id": "ef6e643a266db5c4bb87e87d7beb122d",
+                "text": "Embora eu ter recebido o produto em dias, mas o meu produto veio com avaria o produto foi uma película de um smartphone da Asus zenfone 3 zoom a película veio trincada...",
+                "index": 175
+        },
+        {
+                "id": "4aefaeee5ed09296c3352265560dd522",
+                "text": "Quero o produto que comprei. Paguei pelo amarelo e pelo acgua 2 produtos diferentes pela cor.\nMe enviaram 2 Acqua",
+                "index": 176
+        },
+        {
+                "id": "74faa8128ffe6b654dfc1330eb4e61aa",
+                "text": "entrega foi rapida",
+                "index": 177
+        },
+        {
+                "id": "24a56c5bb899c87761faae0e713aac1d",
+                "text": "Satisfeita com a compra. Entrega rápida , super indico essa loja. ",
+                "index": 178
+        },
+        {
+                "id": "e8109a7418b26f16b2a57e92d3586637",
+                "text": "Produto maravilhoso, recebi antes do prazo. Tudo muito bem embalado. ",
+                "index": 179
+        },
+        {
+                "id": "0cd19f56749599224811bb3555e92385",
+                "text": "Recebí dentro do prazo!\nKit original!",
+                "index": 180
+        },
+        {
+                "id": "676afc5d855115f38150fd0902a45b3a",
+                "text": "A entrega foi muito rápida e o produto atende as expectativas!",
+                "index": 181
+        },
+        {
+                "id": "7fdfd6ad50849fe1435d51b8ffa8e4b2",
+                "text": "Produto de ótima qualidade e entrega dentro do prazo",
+                "index": 182
+        },
+        {
+                "id": "e9530f1076b701ad117d0d1ddd6f6c74",
+                "text": "Muito bom mesmo chegou com 7 dias ",
+                "index": 183
+        },
+        {
+                "id": "720881b598d89f4986451a39bd0f54e4",
+                "text": "São muito atenciosos e prestativos. \n",
+                "index": 184
+        },
+        {
+                "id": "fb0c6bce9f869f1edde9d8e2539a83c2",
+                "text": "É muito difícil o contato com vocês pois às vezes o problema não se enquadra nas opções disponíveis no site.",
+                "index": 185
+        },
+        {
+                "id": "6cfa10799b73732ffa8142d6c331921a",
+                "text": "Não foi entegue",
+                "index": 186
+        },
+        {
+                "id": "122bc2757bf00a74044291c8956979dd",
+                "text": "Consta no site que o meu pedido já foi entregue porém não recebi favor verificar os dados da pessoa que recebeu e me retornar com urgência pois vou atrás do meu direito como consumidor.aguardo retorno",
+                "index": 187
+        },
+        {
+                "id": "3efa3930d080fe8a78d1c0d616019a85",
+                "text": "Ótima compra. Obrigado.",
+                "index": 188
+        },
+        {
+                "id": "f595b868d7e62687017e398a266b2a42",
+                "text": "Muito bom o produto",
+                "index": 189
+        },
+        {
+                "id": "5fc24814be99e80023baebff0e4747c9",
+                "text": "Entrega dentro do prazo estabelecido. Produto em ótimas condições.Produto em si excelente!",
+                "index": 190
+        },
+        {
+                "id": "41294ce398e8205d103615def8ef3b9b",
+                "text": "comprei 2 unidades recebi 1 unidade\nainda paguei 2 fretes para vir junto",
+                "index": 191
+        },
+        {
+                "id": "cb1f6bea74be52229a06bc2fb5a60bb3",
+                "text": "Ainda não recebi meu produto, esta totalmente fora do prazo de entrega, me sinto lesado",
+                "index": 192
+        },
+        {
+                "id": "2c1c256941576fe10bfa073c8c680be2",
+                "text": "O produto é bom e a entrega foi rápida",
+                "index": 193
+        },
+        {
+                "id": "aea18b525504e6d6cd40b116a35f6cc8",
+                "text": "Produto de qualidade.",
+                "index": 194
+        },
+        {
+                "id": "96616c4c1ccaf42bcb7dc3f01f74e5a2",
+                "text": "Comprei um item limpador de ar condicionado automotivo de lima limão, enviaram de lavanda.\n\nDe qualquer forma chegou o produto.",
+                "index": 195
+        },
+        {
+                "id": "953b9f0e4c4b78ac786abd80207506b0",
+                "text": "Entregou bem antes do prazo.",
+                "index": 196
+        },
+        {
+                "id": "dc7ff228430317daa558734a4af3527d",
+                "text": "O prazo para entrega era dia 14/05 e até agora não chegou. Uma falta de respeito com o consumidor. O numero do pedido nem sequer aparece na relação de pedidos no site lannister.com",
+                "index": 197
+        },
+        {
+                "id": "2d8b83f5db81a54ef475d8d7aa78204b",
+                "text": "super recomendo ",
+                "index": 198
+        },
+        {
+                "id": "02303acbf32fcc6401f552eaef2bf19f",
+                "text": "Previsão de entrega até 18/10, recebi em 05/10, excelente.",
+                "index": 199
+        }
+];
+        
+        // Labels storage
+        let labels = JSON.parse(localStorage.getItem('review_labels') || '{}');
+        
+        let currentIndex = parseInt(localStorage.getItem('current_review_index') || '0');
+        
+        // Category mappings
+        const categories = ['logistica', 'produto', 'atendimento', 'preco'];
+        const categoryNames = {
+            'logistica': 'Logística',
+            'produto': 'Produto',
+            'atendimento': 'Atendimento',
+            'preco': 'Preço'
+        };
+        const sentiments = ['positivo', 'negativo', 'neutro'];
+        
+        // Initialize
+        function init() {
+            loadReview(currentIndex);
+            updateProgress();
+            setupListeners();
+        }
+        
+        function setupListeners() {
+            // Radio buttons for categories
+            categories.forEach(cat => {
+                sentiments.forEach(sent => {
+                    const radio = document.getElementById(`${cat}-${sent}`);
+                    if (radio) {
+                        radio.addEventListener('change', updateStats);
+                    }
+                });
+            });
+            
+            // Remove flag checkbox
+            const removeCheckbox = document.getElementById('to-remove');
+            if (removeCheckbox) {
+                removeCheckbox.addEventListener('change', updateStats);
+            }
+        }
+        
+        function loadReview(index) {
+            if (index < 0 || index >= reviews.length) return;
+            
+            currentIndex = index;
+            const review = reviews[index];
+            
+            document.getElementById('review-id').textContent = `ID: ${review.id}`;
+            document.getElementById('review-text').textContent = review.text;
+            document.getElementById('current-index').textContent = index + 1;
+            document.getElementById('total-reviews').textContent = reviews.length;
+            
+            // Load saved labels
+            const reviewId = review.id;
+            const savedLabels = labels[reviewId] || {};
+            
+            // Clear all radio buttons and category cards
+            categories.forEach(cat => {
+                sentiments.forEach(sent => {
+                    const radio = document.getElementById(`${cat}-${sent}`);
+                    if (radio) {
+                        radio.checked = false;
+                        const radioItem = document.getElementById(`radio-${cat}-${sent}`);
+                        if (radioItem) {
+                            radioItem.classList.remove('checked', 'positivo', 'negativo', 'neutro');
+                        }
+                    }
+                });
+                const card = document.getElementById(`card-${cat}`);
+                if (card) {
+                    card.classList.remove('active');
+                }
+            });
+            
+            // Restore category sentiments
+            if (savedLabels.categories) {
+                const categoryKeyMap = {
+                    'Logística': 'logistica',
+                    'Produto': 'produto',
+                    'Atendimento': 'atendimento',
+                    'Preço': 'preco'
+                };
+                
+                Object.keys(savedLabels.categories).forEach(catName => {
+                    const sentiment = savedLabels.categories[catName];
+                    const catId = categoryKeyMap[catName];
+                    
+                    if (catId && sentiment && sentiments.includes(sentiment.toLowerCase())) {
+                        const radio = document.getElementById(`${catId}-${sentiment.toLowerCase()}`);
+                        if (radio) {
+                            radio.checked = true;
+                            const radioItem = document.getElementById(`radio-${catId}-${sentiment.toLowerCase()}`);
+                            if (radioItem) {
+                                radioItem.classList.add('checked', sentiment.toLowerCase());
+                            }
+                            const card = document.getElementById(`card-${catId}`);
+                            if (card) {
+                                card.classList.add('active');
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Restore remove flag
+            const removeCheckbox = document.getElementById('to-remove');
+            const removeContainer = document.getElementById('remove-flag-container');
+            if (removeCheckbox && removeContainer) {
+                removeCheckbox.checked = savedLabels.toRemove || false;
+                if (removeCheckbox.checked) {
+                    removeContainer.classList.add('checked');
+                } else {
+                    removeContainer.classList.remove('checked');
+                }
+            }
+            
+            // Update navigation buttons
+            document.getElementById('prev-btn').disabled = index === 0;
+            document.getElementById('next-btn').disabled = index === reviews.length - 1;
+            
+            updateStats();
+        }
+        
+        function saveCurrentLabels() {
+            const reviewId = reviews[currentIndex].id;
+            const categorySentiments = {};
+            
+            // Get sentiment for each category
+            categories.forEach(cat => {
+                sentiments.forEach(sent => {
+                    const radio = document.getElementById(`${cat}-${sent}`);
+                    if (radio && radio.checked) {
+                        const catName = categoryNames[cat];
+                        categorySentiments[catName] = sent.charAt(0).toUpperCase() + sent.slice(1);
+                    }
+                });
+            });
+            
+            // Get remove flag
+            const removeCheckbox = document.getElementById('to-remove');
+            const toRemove = removeCheckbox ? removeCheckbox.checked : false;
+            
+            labels[reviewId] = {
+                categories: categorySentiments,
+                toRemove: toRemove
+            };
+            
+            localStorage.setItem('review_labels', JSON.stringify(labels));
+            updateProgress();
+        }
+        
+        function previousReview() {
+            if (currentIndex > 0) {
+                saveCurrentLabels();
+                loadReview(currentIndex - 1);
+                localStorage.setItem('current_review_index', currentIndex.toString());
+            }
+        }
+        
+        function nextReview() {
+            if (currentIndex < reviews.length - 1) {
+                saveCurrentLabels();
+                loadReview(currentIndex + 1);
+                localStorage.setItem('current_review_index', currentIndex.toString());
+            }
+        }
+        
+        function updateStats() {
+            // Count labeled categories and update visual states
+            let catCount = 0;
+            categories.forEach(cat => {
+                let hasSelection = false;
+                let selectedSentiment = null;
+                
+                // First, clear all radio items for this category
+                sentiments.forEach(sent => {
+                    const radioItem = document.getElementById(`radio-${cat}-${sent}`);
+                    if (radioItem) {
+                        radioItem.classList.remove('checked', 'positivo', 'negativo', 'neutro');
+                    }
+                });
+                
+                // Then, mark the selected one
+                sentiments.forEach(sent => {
+                    const radio = document.getElementById(`${cat}-${sent}`);
+                    if (radio && radio.checked) {
+                        hasSelection = true;
+                        selectedSentiment = sent;
+                        const radioItem = document.getElementById(`radio-${cat}-${sent}`);
+                        if (radioItem) {
+                            radioItem.classList.add('checked', sent);
+                        }
+                    }
+                });
+                
+                // Update category card
+                const card = document.getElementById(`card-${cat}`);
+                if (card) {
+                    if (hasSelection) {
+                        card.classList.add('active');
+                        catCount++;
+                    } else {
+                        card.classList.remove('active');
+                    }
+                }
+            });
+            
+            document.getElementById('cat-count').textContent = catCount;
+            
+            // Update remove flag visual state
+            const removeCheckbox = document.getElementById('to-remove');
+            const removeContainer = document.getElementById('remove-flag-container');
+            if (removeCheckbox && removeContainer) {
+                if (removeCheckbox.checked) {
+                    removeContainer.classList.add('checked');
+                    document.getElementById('remove-flag-status').textContent = 'Sim';
+                } else {
+                    removeContainer.classList.remove('checked');
+                    document.getElementById('remove-flag-status').textContent = 'Não';
+                }
+            }
+            
+            // Auto-save on change
+            saveCurrentLabels();
+        }
+        
+        function updateProgress() {
+            const labeledCount = Object.keys(labels).length;
+            const total = reviews.length;
+            const percentage = (labeledCount / total) * 100;
+            
+            document.getElementById('progress-text').textContent = `${labeledCount}/${total}`;
+            document.getElementById('progress-fill').style.width = `${percentage}%`;
+        }
+        
+        function saveProgress() {
+            saveCurrentLabels();
+            alert('Progresso salvo com sucesso!');
+        }
+        
+        function loadProgress() {
+            labels = JSON.parse(localStorage.getItem('review_labels') || '{}');
+            currentIndex = parseInt(localStorage.getItem('current_review_index') || '0');
+            loadReview(currentIndex);
+            updateProgress();
+            alert('Progresso carregado!');
+        }
+        
+        function exportData() {
+            saveCurrentLabels();
+            
+            // Prepare export data
+            const exportData = reviews.map(review => {
+                const reviewLabels = labels[review.id] || {};
+                const categoryData = reviewLabels.categories || {};
+                
+                // Build category columns
+                const logistica = categoryData['Logística'] || '';
+                const produto = categoryData['Produto'] || '';
+                const atendimento = categoryData['Atendimento'] || '';
+                const preco = categoryData['Preço'] || '';
+                
+                return {
+                    review_id: review.id,
+                    review_text: review.text,
+                    logistica_sentimento: logistica,
+                    produto_sentimento: produto,
+                    atendimento_sentimento: atendimento,
+                    preco_sentimento: preco,
+                    to_remove: reviewLabels.toRemove ? 'Sim' : 'Não'
+                };
+            });
+            
+            // Create CSV
+            const headers = ['review_id', 'review_text', 'logistica_sentimento', 'produto_sentimento', 'atendimento_sentimento', 'preco_sentimento', 'to_remove'];
+            const csvRows = [headers.join(',')];
+            
+            exportData.forEach(row => {
+                const values = [
+                    row.review_id,
+                    `"${row.review_text.replace(/"/g, '""')}"`,
+                    row.logistica_sentimento,
+                    row.produto_sentimento,
+                    row.atendimento_sentimento,
+                    row.preco_sentimento,
+                    row.to_remove
+                ];
+                csvRows.push(values.join(','));
+            });
+            
+            const csv = csvRows.join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'rotulacao_reviews.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Also export JSON
+            const jsonBlob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const jsonLink = document.createElement('a');
+            const jsonUrl = URL.createObjectURL(jsonBlob);
+            jsonLink.setAttribute('href', jsonUrl);
+            jsonLink.setAttribute('download', 'rotulacao_reviews.json');
+            jsonLink.style.visibility = 'hidden';
+            document.body.appendChild(jsonLink);
+            jsonLink.click();
+            document.body.removeChild(jsonLink);
+            
+            alert('Dados exportados com sucesso!');
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                previousReview();
+            } else if (e.key === 'ArrowRight' && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                nextReview();
+            }
+        });
+        
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>

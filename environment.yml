@@ -1,0 +1,10 @@
+name: tcc_bertimbau
+channels:
+  - defaults
+dependencies:
+  - python=3.10
+  - pandas
+  - openpyxl
+  - pip
+  - pip:
+    - kagglehub
