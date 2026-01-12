@@ -39,6 +39,7 @@ Classificar automaticamente o sentimento (Positivo, Negativo, Neutro) de reviews
 TCC - FT BERTimbau/
 ├── 📂 codigo/                    # Scripts Python
 │   ├── fine_tuning_absa.py       # Fine-tuning do BERTimbau
+│   ├── inferencia_absa.py        # Inferência e testes do modelo
 │   ├── baseline_comparison.py    # Comparação com baselines
 │   ├── generate_sample.py        # Geração de amostra balanceada
 │   ├── generate_labeling_html.py # Interface HTML para rotulagem
@@ -141,7 +142,27 @@ Parâmetros configuráveis:
 - Early stopping automático
 - Salva melhor modelo automaticamente
 
-### 4. Comparar com Baselines
+### 4. Testar o Modelo (Inferência)
+
+```bash
+# Executar testes de exemplo
+python inferencia_absa.py --testes
+
+# Classificar um texto específico
+python inferencia_absa.py --texto "Produto excelente, entrega rápida!"
+
+# Modo interativo
+python inferencia_absa.py
+```
+
+Exemplo de saída:
+```
+📝 'O celular é incrível, mas a entrega demorou uma eternidade.'
+  ✅ Produto_Pos: 87%
+  ❌ Logística_Neg: 82%
+```
+
+### 5. Comparar com Baselines
 
 ```bash
 python baseline_comparison.py
