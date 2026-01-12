@@ -37,16 +37,12 @@ LABELS = [
     "Preço_Pos", "Preço_Neg"
 ]
 
-# Thresholds otimizados (ajuste conforme necessário após validação)
+# Thresholds otimizados (baseados na validação do baseline_comparison.py)
 DEFAULT_THRESHOLDS = {
-    "Logística_Pos": 0.5,
-    "Logística_Neg": 0.5,
-    "Produto_Pos": 0.5,
-    "Produto_Neg": 0.5,
-    "Atend_Pos": 0.5,
-    "Atend_Neg": 0.5,
-    "Preço_Pos": 0.5,
-    "Preço_Neg": 0.5
+    "Logística_Pos": 0.50, "Logística_Neg": 0.50,
+    "Produto_Pos": 0.55,   "Produto_Neg": 0.45,
+    "Atend_Pos": 0.30,     "Atend_Neg": 0.45,
+    "Preço_Pos": 0.25,     "Preço_Neg": 0.30,
 }
 
 MAX_LENGTH = 128
